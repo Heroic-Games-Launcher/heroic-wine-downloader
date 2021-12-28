@@ -1,0 +1,20 @@
+{
+  "name": "wine-proton-downloader",
+  "version": "1.0.0",
+  "main": "lib/main.js",
+  "repository": "https://github.com/Nocccer/wine-proton-downloader.git",
+  "author": "Nocccer <Nocccer@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^4.5.4"
+  },
+  "scripts": {
+    "build": "tsc --build",
+    "clean": "tsc --build --clean"
+  },
+  "dependencies": {
+    "@types/graceful-fs": "^4.1.5",
+    "axios": "^0.24.0",
+    "graceful-fs": "^4.2.8"
+  }
+}
