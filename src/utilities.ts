@@ -7,15 +7,13 @@ import { ProgressInfo, State, VersionInfo } from './types'
 
 interface fetchProps {
   url: string
-  isWine: boolean
-  isGE: boolean
+  type: 'wine-ge' | 'proton-ge' | 'proton' | 'wine-lutris'
   count: number
 }
 
 function fetchReleases({
   url,
-  isWine,
-  isGE,
+  type,
   count
 }: fetchProps): Promise<VersionInfo[]> {
   const releases: Array<VersionInfo> = []
@@ -26,8 +24,7 @@ function fetchReleases({
         for (const release of data.data) {
           const release_data = {} as VersionInfo
           release_data.version = release.tag_name
-          release_data.type = isWine ? 'wine' : 'proton'
-          release_data.isGE = isGE
+          release_data.type = type
           release_data.date = release.published_at.split('T')[0]
           release_data.disksize = 0
 

@@ -13,8 +13,7 @@
 
 export interface VersionInfo {
   version: string
-  type: 'wine' | 'proton'
-  isGE: boolean
+  type: 'wine-ge' | 'proton-ge' | 'proton' | 'wine-lutris'
   date: string
   download: string
   downsize: number
@@ -24,7 +23,9 @@ export interface VersionInfo {
 
 export enum Repositorys {
   WINEGE,
-  PROTONGE
+  PROTONGE,
+  PROTON,
+  WINELUTRIS
 }
 
 export type State = 'downloading' | 'unzipping' | 'idle'

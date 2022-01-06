@@ -8,7 +8,12 @@ import {
   statSync
 } from 'graceful-fs'
 
-import { WINEGE_URL, PROTONGE_URL } from './constants'
+import {
+  WINEGE_URL,
+  PROTONGE_URL,
+  PROTON_URL,
+  WINELUTRIS_URL
+} from './constants'
 import { VersionInfo, Repositorys, State, ProgressInfo } from './types'
 import { logInfo, logWarning } from './logger'
 import {
@@ -31,7 +36,12 @@ interface getVersionsProps {
  * @returns Info Array of available releases
  */
 async function getAvailableVersions({
-  repositorys = [Repositorys.WINEGE, Repositorys.PROTONGE],
+  repositorys = [
+    Repositorys.WINEGE,
+    Repositorys.PROTONGE,
+    Repositorys.PROTON,
+    Repositorys.WINELUTRIS
+  ],
   count = 100
 }: getVersionsProps): Promise<VersionInfo[]> {
   const releases: Array<VersionInfo> = []
@@ -40,8 +50,7 @@ async function getAvailableVersions({
       case Repositorys.WINEGE: {
         await fetchReleases({
           url: WINEGE_URL,
-          isWine: true,
-          isGE: true,
+          type: 'wine-ge',
           count: count
         })
           .then((fetchedReleases: VersionInfo[]) => {
@@ -55,8 +64,35 @@ async function getAvailableVersions({
       case Repositorys.PROTONGE: {
         await fetchReleases({
           url: PROTONGE_URL,
-          isWine: false,
-          isGE: true,
+          type: 'proton-ge',
+          count: count
+        })
+          .then((fetchedReleases: VersionInfo[]) => {
+            releases.push(...fetchedReleases)
+          })
+          .catch((error: Error) => {
+            throw error
+          })
+        break
+      }
+      case Repositorys.PROTON: {
+        await fetchReleases({
+          url: PROTON_URL,
+          type: 'proton',
+          count: count
+        })
+          .then((fetchedReleases: VersionInfo[]) => {
+            releases.push(...fetchedReleases)
+          })
+          .catch((error: Error) => {
+            throw error
+          })
+        break
+      }
+      case Repositorys.WINELUTRIS: {
+        await fetchReleases({
+          url: WINELUTRIS_URL,
+          type: 'wine-lutris',
           count: count
         })
           .then((fetchedReleases: VersionInfo[]) => {

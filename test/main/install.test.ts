@@ -12,8 +12,7 @@ describe('Main - InstallVersion', () => {
 
     const releaseVersion: VersionInfo = {
       version: '1.2.3',
-      type: 'wine',
-      isGE: false,
+      type: 'wine-ge',
       date: '12/24/2021',
       download: '',
       downsize: 100,
@@ -40,8 +39,7 @@ describe('Main - InstallVersion', () => {
 
     const releaseVersion: VersionInfo = {
       version: '1.2.3',
-      type: 'wine',
-      isGE: false,
+      type: 'wine-ge',
       date: '12/24/2021',
       download: '',
       downsize: 100,
@@ -68,8 +66,7 @@ describe('Main - InstallVersion', () => {
 
     const releaseVersion: VersionInfo = {
       version: '1.2.3',
-      type: 'wine',
-      isGE: false,
+      type: 'wine-ge',
       date: '12/24/2021',
       download: '',
       downsize: 100,
@@ -94,8 +91,7 @@ describe('Main - InstallVersion', () => {
 
     const releaseVersion: VersionInfo = {
       version: '1.2.3',
-      type: 'wine',
-      isGE: false,
+      type: 'wine-ge',
       date: '12/24/2021',
       download: '',
       downsize: 100,
@@ -129,8 +125,7 @@ describe('Main - InstallVersion', () => {
 
     const releaseVersion: VersionInfo = {
       version: '1.2.3',
-      type: 'wine',
-      isGE: false,
+      type: 'wine-ge',
       date: '12/24/2021',
       download: `file:///${__dirname}/../test_data/test.tar.xz`,
       downsize: 100,
@@ -180,8 +175,7 @@ describe('Main - InstallVersion', () => {
 
     const releaseVersion: VersionInfo = {
       version: '1.2.3',
-      type: 'wine',
-      isGE: false,
+      type: 'wine-ge',
       date: '12/24/2021',
       download: `file:///${__dirname}/../test_data/test.tar.xz`,
       downsize: 100,
@@ -233,8 +227,7 @@ describe('Main - InstallVersion', () => {
 
     const releaseVersion: VersionInfo = {
       version: '1.2.3',
-      type: 'wine',
-      isGE: false,
+      type: 'wine-ge',
       date: '12/24/2021',
       download: `file:///${fileLink}`,
       downsize: 100,
@@ -297,8 +290,7 @@ describe('Main - InstallVersion', () => {
 
     const releaseVersion: VersionInfo = {
       version: '1.2.3',
-      type: 'wine',
-      isGE: false,
+      type: 'wine-ge',
       date: '12/24/2021',
       download: `file:///${fileLink}`,
       downsize: 100,
