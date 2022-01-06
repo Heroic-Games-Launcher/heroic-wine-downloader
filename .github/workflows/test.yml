@@ -16,5 +16,7 @@ jobs:
           node-version: '16'
       - name: Install modules.
         run: yarn
-      - name: Test
-        run: yarn test
+      - uses: ArtiomTr/jest-coverage-report-action@v2.0-rc.6
+          with:
+            github-token: ${{ secrets.GITHUB_TOKEN }}
+            test-script: yarn test
