@@ -2,15 +2,36 @@
   "name": "wine-proton-downloader",
   "version": "1.0.0",
   "main": "lib/main.js",
+  "types": "lib/main.d.ts",
+  "files": [
+    "lib/**/*"
+  ],
   "repository": "https://github.com/Nocccer/wine-proton-downloader.git",
   "author": "Nocccer <Nocccer@gmail.com>",
   "license": "MIT",
   "devDependencies": {
+    "@types/jest": "^27.0.3",
+    "@types/node": "^17.0.5",
+    "@typescript-eslint/eslint-plugin": "^5.8.1",
+    "@typescript-eslint/parser": "^5.8.1",
+    "eslint": "^8.5.0",
+    "eslint-config-prettier": "^8.3.0",
+    "jest": "^27.4.5",
+    "prettier": "^2.5.1",
+    "spawn-mock": "^1.0.0",
+    "ts-jest": "^27.1.2",
+    "ts-node": "^10.4.0",
     "typescript": "^4.5.4"
   },
   "scripts": {
-    "build": "tsc --build",
-    "clean": "tsc --build --clean"
+    "test": "jest --config jest.config.js",
+    "lint": "eslint -c .eslintrc --ext .tsx,ts ./src",
+    "lint-fix": "eslint --fix -c .eslintrc --ext .tsx,ts ./src",
+    "build": "tsc -p tsconfig.json",
+    "clean": "rm -rf lib build",
+    "ts-node": "ts-node",
+    "prettier": "prettier --check .",
+    "prettier-fix": "prettier --write ."
   },
   "dependencies": {
     "@types/graceful-fs": "^4.1.5",
