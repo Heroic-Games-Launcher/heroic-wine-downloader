@@ -1,10 +1,17 @@
-import { existsSync, mkdirSync, readFileSync, rmdirSync } from 'graceful-fs'
+import {
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  rmdirSync,
+  copyFileSync
+} from 'graceful-fs'
 import { installVersion } from '../../src/main'
 import { VersionInfo } from '../../src/types'
 import * as axios from 'axios'
 import * as crypto from 'crypto'
 import { logError } from '../../src/logger'
-import { copyFileSync } from 'fs'
+
+const workDir = process.cwd()
 
 describe('Main - InstallVersion', () => {
   test('install fails because installDir does not exist', async () => {
@@ -56,7 +63,7 @@ describe('Main - InstallVersion', () => {
       })
       .catch((error) => {
         expect(error.message).toBe(
-          'Installation directory /home/niklas/Repository/wine-proton-downloader/test/main/install.test.ts is not a directory!'
+          `Installation directory ${workDir}/test/main/install.test.ts is not a directory!`
         )
       })
   })

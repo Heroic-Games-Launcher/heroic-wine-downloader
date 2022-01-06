@@ -1,6 +1,8 @@
 import { existsSync, mkdirSync, rmdirSync } from 'graceful-fs'
 import { unzipFile } from '../../src/utilities'
 
+const workDir = process.cwd()
+
 describe('Utilities - Unzip', () => {
   test('unzip file fails because of invalid archive path', async () => {
     const progress = jest.fn()
@@ -29,7 +31,7 @@ describe('Utilities - Unzip', () => {
       })
       .catch((error) => {
         expect(error).toBe(
-          'Archive path /home/niklas/Repository/wine-proton-downloader/test/utilities is not a file!'
+          `Archive path ${workDir}/test/utilities is not a file!`
         )
       })
   })
@@ -65,7 +67,7 @@ describe('Utilities - Unzip', () => {
     })
       .then((response) => {
         expect(response).toBe(
-          'Succesfully unzip /home/niklas/Repository/wine-proton-downloader/test/utilities/../test_data/test.tar.xz to /home/niklas/Repository/wine-proton-downloader/test/utilities/test_unzip.'
+          `Succesfully unzip ${workDir}/test/utilities/../test_data/test.tar.xz to ${workDir}/test/utilities/test_unzip.`
         )
       })
       .catch(() => {
@@ -96,7 +98,7 @@ describe('Utilities - Unzip', () => {
     })
       .then((response) => {
         expect(response).toBe(
-          'Succesfully unzip /home/niklas/Repository/wine-proton-downloader/test/utilities/../test_data/test.tar.gz to /home/niklas/Repository/wine-proton-downloader/test/utilities/test_unzip.'
+          `Succesfully unzip ${workDir}/test/utilities/../test_data/test.tar.gz to ${workDir}/test/utilities/test_unzip.`
         )
       })
       .catch(() => {
@@ -127,7 +129,7 @@ describe('Utilities - Unzip', () => {
     })
       .then((response) => {
         expect(response).toBe(
-          'Succesfully unzip /home/niklas/Repository/wine-proton-downloader/test/utilities/../test_data/test.tar.gz to /home/niklas/Repository/wine-proton-downloader/test/utilities/test_unzip.'
+          `Succesfully unzip ${workDir}/test/utilities/../test_data/test.tar.gz to ${workDir}/test/utilities/test_unzip.`
         )
       })
       .catch(() => {
@@ -142,7 +144,7 @@ describe('Utilities - Unzip', () => {
     })
       .then((response) => {
         expect(response).toBe(
-          'Succesfully unzip /home/niklas/Repository/wine-proton-downloader/test/utilities/../test_data/test.tar.gz to /home/niklas/Repository/wine-proton-downloader/test/utilities/test_unzip.'
+          `Succesfully unzip ${workDir}/test/utilities/../test_data/test.tar.gz to ${workDir}/test/utilities/test_unzip.`
         )
       })
       .catch(() => {
