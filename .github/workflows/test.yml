@@ -17,6 +17,6 @@ jobs:
       - name: Install modules.
         run: yarn
       - uses: ArtiomTr/jest-coverage-report-action@v2.0-rc.6
-          with:
-            github-token: ${{ secrets.GITHUB_TOKEN }}
-            test-script: yarn test
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          test-script: yarn test
