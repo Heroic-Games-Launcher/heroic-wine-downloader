@@ -20,3 +20,4 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           test-script: yarn test --coverage
+          annotations: none
