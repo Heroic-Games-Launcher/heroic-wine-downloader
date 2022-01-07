@@ -1,8 +1,6 @@
 import * as axios from 'axios'
 import { existsSync, statSync, unlinkSync } from 'graceful-fs'
 import { spawnSync, spawn } from 'child_process'
-
-import { logError } from './logger'
 import { ProgressInfo, State, VersionInfo } from './types'
 
 interface fetchProps {
@@ -58,10 +56,7 @@ function unlinkFile(filePath: string) {
   try {
     unlinkSync(filePath)
     return true
-  } catch (error) {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore: can't give error a type but it mostly a Error or SystemError
-    logError(`Failed to remove ${filePath} with:\n ${error.message} `)
+  } catch {
     return false
   }
 }

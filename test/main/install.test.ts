@@ -9,7 +9,6 @@ import { installVersion } from '../../src/main'
 import { VersionInfo } from '../../src/types'
 import * as axios from 'axios'
 import * as crypto from 'crypto'
-import { logError } from '../../src/logger'
 
 const workDir = process.cwd()
 
@@ -198,8 +197,7 @@ describe('Main - InstallVersion', () => {
         expect(response.versionInfo).toBe(releaseVersion)
         expect(response.installDir).toBe(`${installDir}/test`)
       })
-      .catch((error) => {
-        logError(error.message)
+      .catch(() => {
         failed = true
       })
 
@@ -250,8 +248,7 @@ describe('Main - InstallVersion', () => {
         expect(response.versionInfo).toBe(releaseVersion)
         expect(response.installDir).toBe(`${installDir}/test`)
       })
-      .catch((error) => {
-        logError(error.message)
+      .catch(() => {
         failed = true
       })
 
@@ -313,8 +310,7 @@ describe('Main - InstallVersion', () => {
         expect(response.versionInfo).toBe(releaseVersion)
         expect(response.installDir).toBe(`${installDir}/test`)
       })
-      .catch((error) => {
-        logError(error.message)
+      .catch(() => {
         failed = true
       })
 
