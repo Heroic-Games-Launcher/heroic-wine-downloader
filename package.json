@@ -1,12 +1,12 @@
 {
-  "name": "wine-proton-downloader",
+  "name": "heroic-wine-downloader",
   "version": "1.0.0",
   "main": "lib/main.js",
   "types": "lib/main.d.ts",
   "files": [
     "lib/**/*"
   ],
-  "repository": "https://github.com/Nocccer/wine-proton-downloader.git",
+  "repository": "https://github.com/Heroic-Games-Launcher/heroic-wine-downloader.git",
   "author": "Nocccer <Nocccer@gmail.com>",
   "license": "MIT",
   "devDependencies": {
