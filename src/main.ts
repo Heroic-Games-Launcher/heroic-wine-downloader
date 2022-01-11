@@ -15,7 +15,6 @@ import {
   WINELUTRIS_URL
 } from './constants'
 import { VersionInfo, Repositorys, State, ProgressInfo } from './types'
-import { logInfo, logWarning } from './logger'
 import {
   downloadFile,
   fetchReleases,
@@ -104,7 +103,7 @@ async function getAvailableVersions({
         break
       }
       default: {
-        logWarning(
+        console.warn(
           `Unknown and not supported repository key passed! Skip fetch for ${repo}`
         )
         break
@@ -166,7 +165,7 @@ async function installVersion({
 
   // Check if it already exist
   if (existsSync(installSubDir) && !overwrite) {
-    logWarning(`${versionInfo.version} is already installed. Skip installing! \n
+    console.warn(`${versionInfo.version} is already installed. Skip installing! \n
       Consider using 'override: true if you wan't to override it!'`)
 
     // resolve with disksize
@@ -189,16 +188,12 @@ async function installVersion({
     link: versionInfo.download,
     downloadDir: installDir,
     onProgress: onProgress
+  }).catch((error: string) => {
+    unlinkFile(tarFile)
+    throw new Error(
+      `Download of ${versionInfo.version} failed with:\n ${error}`
+    )
   })
-    .then((response: string) => {
-      logInfo(response)
-    })
-    .catch((error: string) => {
-      unlinkFile(tarFile)
-      throw new Error(
-        `Download of ${versionInfo.version} failed with:\n ${error}`
-      )
-    })
 
   // Check if download checksum is correct
   const fileBuffer = readFileSync(tarFile)
@@ -224,17 +219,13 @@ async function installVersion({
     unzipDir: installSubDir,
     overwrite: overwrite,
     onProgress: onProgress
+  }).catch((error: string) => {
+    rmdirSync(installSubDir, { recursive: true })
+    unlinkFile(tarFile)
+    throw new Error(
+      `Unzip of ${tarFile.split('/').slice(-1)[0]} failed with:\n ${error}`
+    )
   })
-    .then((response: string) => {
-      logInfo(response)
-    })
-    .catch((error: string) => {
-      rmdirSync(installSubDir, { recursive: true })
-      unlinkFile(tarFile)
-      throw new Error(
-        `Unzip of ${tarFile.split('/').slice(-1)[0]} failed with:\n ${error}`
-      )
-    })
 
   // clean up
   unlinkFile(tarFile)

@@ -1,6 +1,8 @@
 import { existsSync, mkdirSync, rmdirSync } from 'graceful-fs'
 import { downloadFile } from '../../src/utilities'
 
+const workDir = process.cwd()
+
 describe('Utilities - Downlaod', () => {
   test('download file fails because of invalid installDir', async () => {
     const progress = jest.fn()
@@ -29,7 +31,7 @@ describe('Utilities - Downlaod', () => {
       })
       .catch((error) => {
         expect(error).toBe(
-          'Download path /home/niklas/Repository/wine-proton-downloader/test/utilities/download.test.ts is not a directory!'
+          `Download path ${workDir}/test/utilities/download.test.ts is not a directory!`
         )
       })
   })
@@ -50,7 +52,7 @@ describe('Utilities - Downlaod', () => {
     })
       .then((response) => {
         expect(response).toBe(
-          'Succesfully downloaded file:////home/niklas/Repository/wine-proton-downloader/test/utilities/../test_data/test.tar.xz to /home/niklas/Repository/wine-proton-downloader/test/utilities/test_download/test.tar.xz.'
+          `Succesfully downloaded file:///${workDir}/test/utilities/../test_data/test.tar.xz to ${workDir}/test/utilities/test_download/test.tar.xz.`
         )
       })
       .catch(() => {
