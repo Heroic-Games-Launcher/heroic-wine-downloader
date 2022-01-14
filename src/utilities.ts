@@ -9,6 +9,15 @@ interface fetchProps {
   count: number
 }
 
+/**
+ * Helper to fetch releases from given url.
+ *
+ * @param url url where to fetch releases from.
+ * @param type type of the releases (wine, proton, ge, ...)
+ * @param count number of releases to fetch
+ * @returns * resolves with an array of {@link VersionInfo}
+ *          * rejects with an {@link Error}
+ */
 function fetchReleases({
   url,
   type,
@@ -52,6 +61,12 @@ function fetchReleases({
   })
 }
 
+/**
+ * Helper to unlink a file.
+ *
+ * @param filePath absolute path to file
+ * @returns true on succeed, else false
+ */
 function unlinkFile(filePath: string) {
   try {
     unlinkSync(filePath)
@@ -61,19 +76,33 @@ function unlinkFile(filePath: string) {
   }
 }
 
-function getFolderSize(folder: string) {
+/**
+ * Helper to get disk space of installed version.
+ *
+ * @param folder absolute path to folder
+ * @returns size of folder in bytes
+ */
+function getFolderSize(folder: string): number {
   const { stdout } = spawnSync('du', ['-sb', folder])
   return parseInt(stdout.toString())
 }
 
 interface downloadProps {
-  link: string
+  url: string
   downloadDir: string
   onProgress: (state: State, progress?: ProgressInfo) => void
 }
 
+/**
+ * Helper to download a file via curl.
+ *
+ * @param url url of the file
+ * @param downloadDir absolute path to the download directory
+ * @param onProgress callback to get download progress
+ * @returns resolves or rejects with a message
+ */
 async function downloadFile({
-  link,
+  url,
   downloadDir,
   onProgress
 }: downloadProps): Promise<string> {
@@ -91,8 +120,8 @@ async function downloadFile({
     }
 
     let percentage = 0
-    const filePath = downloadDir + '/' + link.split('/').slice(-1)[0]
-    const download = spawn('curl', ['-L', link, '-o', filePath, '-#'])
+    const filePath = downloadDir + '/' + url.split('/').slice(-1)[0]
+    const download = spawn('curl', ['-L', url, '-o', filePath, '-#'])
 
     // curl does somehow print on stderr
     // progress calculation is done on stderr
@@ -113,10 +142,10 @@ async function downloadFile({
     download.on('close', function (exitcode: number) {
       onProgress('idle')
       if (exitcode !== 0) {
-        reject(`Download of ${link} failed with exit code ${exitcode}!`)
+        reject(`Download of ${url} failed with exit code ${exitcode}!`)
       }
 
-      resolve(`Succesfully downloaded ${link} to ${filePath}.`)
+      resolve(`Succesfully downloaded ${url} to ${filePath}.`)
     })
   })
 }
@@ -128,6 +157,16 @@ interface unzipProps {
   onProgress: (state: State, progress?: ProgressInfo) => void
 }
 
+/**
+ * Helper to unzip an archive via tar.
+ *
+ * @param filePath url of the file
+ * @param unzipDir absolute path to the unzip directory
+ * @param overwrite allow overwriting existing unpacked files
+ * @defaultValue false
+ * @param onProgress callback to get unzip progress
+ * @returns resolves or rejects with a message
+ */
 async function unzipFile({
   filePath,
   unzipDir,

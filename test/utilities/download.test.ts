@@ -7,7 +7,7 @@ describe('Utilities - Downlaod', () => {
   test('download file fails because of invalid installDir', async () => {
     const progress = jest.fn()
     await downloadFile({
-      link: '',
+      url: '',
       downloadDir: 'invalid',
       onProgress: progress
     })
@@ -22,7 +22,7 @@ describe('Utilities - Downlaod', () => {
   test('download file fails because of installDir is a file', async () => {
     const progress = jest.fn()
     await downloadFile({
-      link: '',
+      url: '',
       downloadDir: __filename,
       onProgress: progress
     })
@@ -46,7 +46,7 @@ describe('Utilities - Downlaod', () => {
     }
 
     await downloadFile({
-      link: `file:///${__dirname}/../test_data/test.tar.xz`,
+      url: `file:///${__dirname}/../test_data/test.tar.xz`,
       downloadDir: installDir,
       onProgress: progress
     })

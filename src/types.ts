@@ -1,16 +1,12 @@
 /**
  * Interface contains information about a version
  * - version
- * - type
+ * - type (wine, proton, lutris, ge ...)
  * - date
  * - download link
  * - checksum link
  * - size (download and disk)
- * - update available
- * - installed
- * - install directory
  */
-
 export interface VersionInfo {
   version: string
   type: 'wine-ge' | 'proton-ge' | 'proton' | 'wine-lutris'
@@ -21,6 +17,9 @@ export interface VersionInfo {
   checksum: string
 }
 
+/**
+ * Enum for the supported repositorys
+ */
 export enum Repositorys {
   WINEGE,
   PROTONGE,
@@ -28,8 +27,14 @@ export enum Repositorys {
   WINELUTRIS
 }
 
+/**
+ * Type for the progress callback state
+ */
 export type State = 'downloading' | 'unzipping' | 'idle'
 
+/**
+ * Interface for the information that progress callback returns
+ */
 export interface ProgressInfo {
   percentage: number
 }

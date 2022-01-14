@@ -29,10 +29,14 @@ interface getVersionsProps {
 }
 
 /**
- * Fetch all available releases of all or given repositorys
- * @param repositorys TODO
- * @param count max releases to fetch for (default: 100)
- * @returns Info Array of available releases
+ * Fetch all available releases for given {@link Repositorys}.
+ * If no repository is given, all {@link Repositorys} are checked.
+ * @param repositorys array of {@link Repositorys}.
+ * @defaultValue all {@link Repositorys}
+ * @param count max versions to fetch for each {@link Repository}
+ * @defaultValue 100
+ * @returns * resolves with an array of {@link VersionInfo}
+ *          * rejects with an {@link Error}
  */
 async function getAvailableVersions({
   repositorys = [
@@ -121,11 +125,17 @@ interface installProps {
 }
 
 /**
- * TODO
- * @param release
- * @param onDownloadProgress
- * @param onUnzipProgress
- * @returns
+ * Installs a given version to the given installation directory.
+ *
+ * @param versionInfo the version to install as {@link VersionInfo}
+ * @param installDir absolute path to installation directory
+ * @param overwrite allow overwriting existing version installation
+ * @defaultValue false
+ * @param onProgress callback to get installation progress
+ * @defaultValue void
+ * @returns * resolves with updated {@link VersionInfo} and the full installation
+ *            directory
+ *          * rejects with an {@link Error}
  */
 async function installVersion({
   versionInfo,
@@ -185,7 +195,7 @@ async function installVersion({
 
   // Download
   await downloadFile({
-    link: versionInfo.download,
+    url: versionInfo.download,
     downloadDir: installDir,
     onProgress: onProgress
   }).catch((error: string) => {
