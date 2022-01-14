@@ -1,2 +1,2 @@
-export { getAvailableVersions, installVersion } from './main'
-export { VersionInfo, Repositorys } from './types'
+export * from './main'
+export * from './types'

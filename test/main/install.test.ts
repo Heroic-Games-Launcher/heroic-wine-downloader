@@ -2,7 +2,7 @@ import {
   existsSync,
   mkdirSync,
   readFileSync,
-  rmdirSync,
+  rmSync,
   copyFileSync
 } from 'graceful-fs'
 import { installVersion } from '../../src/main'
@@ -151,7 +151,7 @@ describe('Main - InstallVersion', () => {
       })
 
     if (existsSync(installDir)) {
-      rmdirSync(installDir, { recursive: true })
+      rmSync(installDir, { recursive: true })
     }
 
     if (failed) {
@@ -202,7 +202,7 @@ describe('Main - InstallVersion', () => {
       })
 
     if (existsSync(installDir)) {
-      rmdirSync(installDir, { recursive: true })
+      rmSync(installDir, { recursive: true })
     }
 
     if (failed) {
@@ -253,7 +253,7 @@ describe('Main - InstallVersion', () => {
       })
 
     if (existsSync(installDir)) {
-      rmdirSync(installDir, { recursive: true })
+      rmSync(installDir, { recursive: true })
     }
 
     if (failed) {
@@ -315,7 +315,7 @@ describe('Main - InstallVersion', () => {
       })
 
     if (existsSync(installDir)) {
-      rmdirSync(installDir, { recursive: true })
+      rmSync(installDir, { recursive: true })
     }
 
     if (failed) {

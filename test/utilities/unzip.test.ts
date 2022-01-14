@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, rmdirSync } from 'graceful-fs'
+import { existsSync, mkdirSync, rmSync } from 'graceful-fs'
 import { unzipFile } from '../../src/utilities'
 
 const workDir = process.cwd()
@@ -74,7 +74,7 @@ describe('Utilities - Unzip', () => {
         failed = true
       })
     if (existsSync(installDir)) {
-      rmdirSync(installDir, { recursive: true })
+      rmSync(installDir, { recursive: true })
     }
 
     if (failed) {
@@ -105,7 +105,7 @@ describe('Utilities - Unzip', () => {
         failed = true
       })
     if (existsSync(installDir)) {
-      rmdirSync(installDir, { recursive: true })
+      rmSync(installDir, { recursive: true })
     }
 
     if (failed) {
@@ -152,7 +152,7 @@ describe('Utilities - Unzip', () => {
       })
 
     if (existsSync(installDir)) {
-      rmdirSync(installDir, { recursive: true })
+      rmSync(installDir, { recursive: true })
     }
 
     if (failed) {

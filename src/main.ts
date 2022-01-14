@@ -4,7 +4,7 @@ import {
   existsSync,
   mkdirSync,
   readFileSync,
-  rmdirSync,
+  rmSync,
   statSync
 } from 'graceful-fs'
 
@@ -230,7 +230,7 @@ async function installVersion({
     overwrite: overwrite,
     onProgress: onProgress
   }).catch((error: string) => {
-    rmdirSync(installSubDir, { recursive: true })
+    rmSync(installSubDir, { recursive: true })
     unlinkFile(tarFile)
     throw new Error(
       `Unzip of ${tarFile.split('/').slice(-1)[0]} failed with:\n ${error}`

@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, rmdirSync } from 'graceful-fs'
+import { existsSync, mkdirSync, rmSync } from 'graceful-fs'
 import { downloadFile } from '../../src/utilities'
 
 const workDir = process.cwd()
@@ -60,7 +60,7 @@ describe('Utilities - Downlaod', () => {
       })
 
     if (existsSync(installDir)) {
-      rmdirSync(installDir, { recursive: true })
+      rmSync(installDir, { recursive: true })
     }
 
     if (failed) {
