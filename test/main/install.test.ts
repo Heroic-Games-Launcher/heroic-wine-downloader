@@ -9,6 +9,7 @@ import { installVersion } from '../../src/main'
 import { VersionInfo } from '../../src/types'
 import * as axios from 'axios'
 import * as crypto from 'crypto'
+import { clearInterval } from 'timers'
 
 const workDir = process.cwd()
 
@@ -133,7 +134,7 @@ describe('Main - InstallVersion', () => {
       version: '1.2.3',
       type: 'wine-ge',
       date: '12/24/2021',
-      download: `file:///${__dirname}/../test_data/test.tar.xz`,
+      download: `file:///${__dirname}/../test_data/test.tar.gz`,
       downsize: 100,
       disksize: 0,
       checksum: '<to-checksum-file>'
@@ -185,7 +186,7 @@ describe('Main - InstallVersion', () => {
       version: 'Wine-1.2.3',
       type: 'wine-ge',
       date: '12/24/2021',
-      download: `file:///${__dirname}/../test_data/test.tar.xz`,
+      download: `file:///${__dirname}/../test_data/test.tar.gz`,
       downsize: 100,
       disksize: 0,
       checksum: '<to-checksum-file>'
@@ -216,8 +217,142 @@ describe('Main - InstallVersion', () => {
     })
   })
 
+  test('install can be aborted during download', async () => {
+    const fileLink = `${__dirname}/../test_data/test.tar.gz`
+    const fileBuffer = readFileSync(fileLink)
+    const hashSum = crypto.createHash('sha512')
+    hashSum.update(fileBuffer)
+    const checksum = hashSum.digest('hex')
+
+    const installDir = __dirname + '/test_install'
+    let failed = false
+    axios.default.get = jest.fn().mockReturnValue({ data: checksum })
+    const progress = jest.fn()
+
+    if (!existsSync(installDir)) {
+      mkdirSync(installDir)
+    }
+
+    const releaseVersion: VersionInfo = {
+      version: 'Wine-1.2.3',
+      type: 'wine-ge',
+      date: '12/24/2021',
+      download: `file:///${fileLink}`,
+      downsize: 100,
+      disksize: 0,
+      checksum: '<to-checksum-file>'
+    }
+
+    const abortController = new AbortController()
+
+    const interval = setInterval(() => {
+      if (
+        progress.mock.calls.find((call) => {
+          return call[0] === 'downloading'
+        })
+      ) {
+        abortController.abort()
+        clearInterval(interval)
+      }
+    }, 1)
+
+    await installVersion({
+      versionInfo: releaseVersion,
+      installDir: installDir,
+      onProgress: progress,
+      abortSignal: abortController.signal
+    })
+      .then(() => {
+        failed = true
+      })
+      .catch((error: Error) => {
+        expect(error.message).toBe('Installation of Wine-1.2.3 was aborted!')
+      })
+
+    if (existsSync(installDir)) {
+      rmSync(installDir, { recursive: true })
+    }
+
+    clearInterval(interval)
+
+    if (failed) {
+      throw Error('No error should be thrown!')
+    }
+
+    expect(axios.default.get).toBeCalledWith('<to-checksum-file>', {
+      responseType: 'text'
+    })
+  })
+
+  test('install can be aborted during unzip', async () => {
+    const fileLink = `${__dirname}/../test_data/test.tar.gz`
+    const fileBuffer = readFileSync(fileLink)
+    const hashSum = crypto.createHash('sha512')
+    hashSum.update(fileBuffer)
+    const checksum = hashSum.digest('hex')
+
+    const installDir = __dirname + '/test_install'
+    let failed = false
+    axios.default.get = jest.fn().mockReturnValue({ data: checksum })
+    const progress = jest.fn()
+
+    if (!existsSync(installDir)) {
+      mkdirSync(installDir)
+    }
+
+    const releaseVersion: VersionInfo = {
+      version: 'Wine-1.2.3',
+      type: 'wine-ge',
+      date: '12/24/2021',
+      download: `file:///${fileLink}`,
+      downsize: 100,
+      disksize: 0,
+      checksum: '<to-checksum-file>'
+    }
+
+    const abortController = new AbortController()
+
+    const interval = setInterval(() => {
+      if (
+        progress.mock.calls.find((call) => {
+          return call[0] === 'unzipping'
+        })
+      ) {
+        abortController.abort()
+        clearInterval(interval)
+      }
+    }, 1)
+
+    await installVersion({
+      versionInfo: releaseVersion,
+      installDir: installDir,
+      onProgress: progress,
+      abortSignal: abortController.signal
+    })
+      .then(() => {
+        failed = true
+      })
+      .catch((error: Error) => {
+        expect(error.message).toBe('Installation of Wine-1.2.3 was aborted!')
+      })
+
+    if (existsSync(installDir)) {
+      rmSync(installDir, { recursive: true })
+    }
+
+    clearInterval(interval)
+
+    if (failed) {
+      throw Error('No error should be thrown!')
+    }
+
+    expect(axios.default.get).toBeCalledWith('<to-checksum-file>', {
+      responseType: 'text'
+    })
+  })
+
   test('install succeed', async () => {
-    const fileLink = `${__dirname}/../test_data/test.tar.xz`
+    const fileLink = `${__dirname}/../test_data/test.tar.gz`
     const fileBuffer = readFileSync(fileLink)
     const hashSum = crypto.createHash('sha512')
     hashSum.update(fileBuffer)
@@ -276,7 +411,7 @@ describe('Main - InstallVersion', () => {
   })
 
   test('install succeed if tar file still exists in install dir', async () => {
-    const fileLink = `${__dirname}/../test_data/test.tar.xz`
+    const fileLink = `${__dirname}/../test_data/test.tar.gz`
     const fileBuffer = readFileSync(fileLink)
     const hashSum = crypto.createHash('sha512')
     hashSum.update(fileBuffer)
@@ -340,7 +475,7 @@ describe('Main - InstallVersion', () => {
   })
 
   test('install fails if subfolder can not be created', async () => {
-    const fileLink = `${__dirname}/../test_data/test.tar.xz`
+    const fileLink = `${__dirname}/../test_data/test.tar.gz`
     const fileBuffer = readFileSync(fileLink)
     const hashSum = crypto.createHash('sha512')
     hashSum.update(fileBuffer)

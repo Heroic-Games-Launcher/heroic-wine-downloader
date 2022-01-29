@@ -51,6 +51,43 @@ describe('Utilities - Unzip', () => {
       })
   })
 
+  test('unzip file can be aborted', async () => {
+    const progress = jest.fn()
+    const installDir = __dirname + '/test_unzip'
+    let failed = false
+
+    if (!existsSync(installDir)) {
+      mkdirSync(installDir)
+    }
+
+    const abortController = new AbortController()
+
+    setTimeout(() => {
+      abortController.abort()
+    }, 10)
+
+    await unzipFile({
+      filePath: `${__dirname}/../test_data/test.tar.xz`,
+      unzipDir: installDir,
+      onProgress: progress,
+      abortSignal: abortController.signal
+    })
+      .then(() => {
+        failed = true
+      })
+      .catch((error) => {
+        expect(error).toBe('AbortError')
+      })
+
+    if (existsSync(installDir)) {
+      rmSync(installDir, { recursive: true })
+    }
+
+    if (failed) {
+      throw Error('No error should be thrown!')
+    }
+  })
+
   test('unzip tar.xz file succeesfully', async () => {
     const progress = jest.fn()
     const installDir = __dirname + '/test_unzip'
@@ -73,6 +110,7 @@ describe('Utilities - Unzip', () => {
       .catch(() => {
         failed = true
       })
+
     if (existsSync(installDir)) {
       rmSync(installDir, { recursive: true })
     }

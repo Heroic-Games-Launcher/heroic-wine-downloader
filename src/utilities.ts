@@ -67,14 +67,15 @@ function fetchReleases({
  * Helper to unlink a file.
  *
  * @param filePath absolute path to file
- * @returns true on succeed, else false
+ * @throws {@link Error}
  */
 function unlinkFile(filePath: string) {
   try {
-    unlinkSync(filePath)
-    return true
+    if (existsSync(filePath)) {
+      unlinkSync(filePath)
+    }
   } catch {
-    return false
+    throw new Error(`Couldn't remove ${filePath}!`)
   }
 }
 
@@ -94,6 +95,7 @@ interface downloadProps {
   downloadDir: string
   downsize: number
   onProgress: (state: State, progress?: ProgressInfo) => void
+  abortSignal?: AbortSignal
 }
 
 /**
@@ -103,13 +105,15 @@ interface downloadProps {
  * @param downloadDir absolute path to the download directory
  * @param downsize needed to calculate download speed
  * @param onProgress callback to get download progress
+ * @param abortSignal signal to abort spawn
  * @returns resolves or rejects with a message
  */
 async function downloadFile({
   url,
   downloadDir,
   downsize,
-  onProgress
+  onProgress,
+  abortSignal
 }: downloadProps): Promise<string> {
   return new Promise((resolve, reject) => {
     try {
@@ -126,7 +130,9 @@ async function downloadFile({
 
     let percentage = 0
     const filePath = downloadDir + '/' + url.split('/').slice(-1)[0]
-    const download = spawn('curl', ['-L', url, '-o', filePath, '-#'])
+    const download = spawn('curl', ['-L', url, '-o', filePath, '-#'], {
+      signal: abortSignal
+    })
 
     const startTime = process.hrtime.bigint()
 
@@ -165,10 +171,18 @@ async function downloadFile({
     download.on('close', function (exitcode: number) {
       onProgress('idle')
       if (exitcode !== 0) {
-        reject(`Download of ${url} failed with exit code ${exitcode}!`)
+        reject(`Download of ${url} failed with exit code:\n ${exitcode}!`)
       }
 
       resolve(`Succesfully downloaded ${url} to ${filePath}.`)
+    })
+
+    download.on('error', (error: Error) => {
+      if (error.name.includes('AbortError')) {
+        reject(error.name)
+      } else {
+        reject(`Download of ${url} failed with:\n ${error.message}!`)
+      }
     })
   })
 }
@@ -178,6 +192,7 @@ interface unzipProps {
   unzipDir: string
   overwrite?: boolean
   onProgress: (state: State, progress?: ProgressInfo) => void
+  abortSignal?: AbortSignal
 }
 
 /**
@@ -194,7 +209,8 @@ async function unzipFile({
   filePath,
   unzipDir,
   overwrite = false,
-  onProgress
+  onProgress,
+  abortSignal
 }: unzipProps): Promise<string> {
   return new Promise((resolve, reject) => {
     try {
@@ -232,7 +248,7 @@ async function unzipFile({
       args.push('--overwrite')
     }
 
-    const unzip = spawn('tar', args)
+    const unzip = spawn('tar', args, { signal: abortSignal })
 
     onProgress('unzipping')
 
@@ -242,16 +258,24 @@ async function unzipFile({
 
     unzip.stderr.on('data', function (stderr: string) {
       onProgress('idle')
-      reject(stderr)
+      reject(`Unzip of ${filePath} failed with:\n ${stderr}!`)
     })
 
     unzip.on('close', function (exitcode: number) {
       onProgress('idle')
       if (exitcode !== 0) {
-        reject(`Unzip of ${filePath} failed with exit code ${exitcode}!`)
+        reject(`Unzip of ${filePath} failed with exit code:\n ${exitcode}!`)
       }
 
       resolve(`Succesfully unzip ${filePath} to ${unzipDir}.`)
+    })
+
+    unzip.on('error', (error: Error) => {
+      if (error.name.includes('AbortError')) {
+        reject(error.name)
+      } else {
+        reject(`Unzip of ${filePath} failed with:\n ${error.message}!`)
+      }
     })
   })
 }
