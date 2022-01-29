@@ -30,7 +30,9 @@ function fetchReleases({
       .then((data) => {
         for (const release of data.data) {
           const release_data = {} as VersionInfo
-          release_data.version = release.tag_name
+          release_data.version = type.includes('wine')
+            ? `Wine-${release.tag_name}`
+            : `Proton-${release.tag_name}`
           release_data.type = type
           release_data.date = release.published_at.split('T')[0]
           release_data.disksize = 0

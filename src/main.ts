@@ -157,13 +157,7 @@ async function installVersion({
     throw new Error(`No download link provided for ${versionInfo.version}!`)
   }
 
-  // get name of the wine folder to install the selected version
-  const folderNameParts = versionInfo.download
-    .split('/') // split path
-    .slice(-1)[0] // get the archive name
-    .split('.') // split dots
-    .slice(0, -2) // remove the archive extensions (tar.xz or tar.gz)
-  const installSubDir = installDir + '/' + folderNameParts.join('.')
+  const installSubDir = installDir + '/' + versionInfo.version
 
   const sourceChecksum = versionInfo.checksum
     ? (
