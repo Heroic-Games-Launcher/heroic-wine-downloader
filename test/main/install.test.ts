@@ -374,7 +374,7 @@ describe('Main - InstallVersion', () => {
       })
       .catch((error: Error) => {
         expect(error.message).toContain(
-          'Failed to make folder /home/niklas/Repository/wine-proton-downloader/test/main/test_install/Wine-1.2.3/invalid with:'
+          `Failed to make folder ${installDir}/Wine-1.2.3/invalid with:`
         )
       })
 
