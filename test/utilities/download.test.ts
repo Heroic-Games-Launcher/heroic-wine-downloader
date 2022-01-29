@@ -9,6 +9,7 @@ describe('Utilities - Downlaod', () => {
     await downloadFile({
       url: '',
       downloadDir: 'invalid',
+      downsize: 100000,
       onProgress: progress
     })
       .then(() => {
@@ -24,6 +25,7 @@ describe('Utilities - Downlaod', () => {
     await downloadFile({
       url: '',
       downloadDir: __filename,
+      downsize: 100000,
       onProgress: progress
     })
       .then(() => {
@@ -48,6 +50,7 @@ describe('Utilities - Downlaod', () => {
     await downloadFile({
       url: `file:///${__dirname}/../test_data/test.tar.xz`,
       downloadDir: installDir,
+      downsize: 100000,
       onProgress: progress
     })
       .then((response) => {
@@ -67,9 +70,15 @@ describe('Utilities - Downlaod', () => {
       throw Error('No error should be thrown!')
     }
 
-    expect(progress).toBeCalledWith('downloading', { percentage: 0 })
     expect(progress).toBeCalledWith('downloading', {
-      percentage: expect.any(Number)
+      percentage: 0,
+      avgSpeed: 0,
+      eta: 1
+    })
+    expect(progress).toBeCalledWith('downloading', {
+      percentage: expect.any(Number),
+      avgSpeed: expect.any(Number),
+      eta: expect.any(Number)
     })
     expect(progress).toBeCalledWith('idle')
   })
