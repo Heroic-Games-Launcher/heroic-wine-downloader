@@ -38,6 +38,44 @@ describe('Utilities - Downlaod', () => {
       })
   })
 
+  test('download file can be aborted', async () => {
+    const progress = jest.fn()
+    const installDir = __dirname + '/test_download'
+    let failed = false
+
+    if (!existsSync(installDir)) {
+      mkdirSync(installDir)
+    }
+
+    const abortController = new AbortController()
+
+    setTimeout(() => {
+      abortController.abort()
+    }, 10)
+
+    await downloadFile({
+      url: `file:///${__dirname}/../test_data/test.tar.xz`,
+      downloadDir: installDir,
+      downsize: 100000,
+      onProgress: progress,
+      abortSignal: abortController.signal
+    })
+      .then(() => {
+        failed = true
+      })
+      .catch((error) => {
+        expect(error).toBe('AbortError')
+      })
+
+    if (existsSync(installDir)) {
+      rmSync(installDir, { recursive: true })
+    }
+
+    if (failed) {
+      throw Error('No error should be thrown!')
+    }
+  })
+
   test('download file succeed', async () => {
     const progress = jest.fn()
     const installDir = __dirname + '/test_download'

@@ -1,5 +1,7 @@
-import { writeFileSync } from 'graceful-fs'
+import { existsSync, writeFileSync } from 'graceful-fs'
 import { getFolderSize, unlinkFile } from '../../src/utilities'
+
+const workDir = process.cwd()
 
 // run test
 describe('Utilities - Rest', () => {
@@ -17,12 +19,24 @@ describe('Utilities - Rest', () => {
     expect(size).toBeNaN()
   })
 
-  test('unlink file fails', () => {
-    expect(unlinkFile('newFile.txt')).toBeFalsy()
+  test('unlink of folder fails', () => {
+    try {
+      unlinkFile(__dirname)
+      throw Error('No error should be thrown!')
+    } catch (error) {
+      expect(String(error)).toBe(
+        `Error: Couldn't remove ${workDir}/test/utilities!`
+      )
+    }
   })
 
   test('unlink files succeeds', () => {
     writeFileSync('newFile.txt', 'Hello new file!')
-    expect(unlinkFile('newFile.txt')).toBeTruthy()
+    try {
+      unlinkFile('newFile.txt')
+      expect(existsSync('newFile.txt')).toBeFalsy()
+    } catch {
+      throw Error('No error should be thrown!')
+    }
   })
 })

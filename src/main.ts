@@ -122,6 +122,7 @@ interface installProps {
   installDir: string
   overwrite?: boolean
   onProgress?: (state: State, progress?: ProgressInfo) => void
+  abortSignal?: AbortSignal
 }
 
 /**
@@ -143,8 +144,41 @@ async function installVersion({
   overwrite = false,
   onProgress = () => {
     return
-  }
+  },
+  abortSignal
 }: installProps): Promise<{ versionInfo: VersionInfo; installDir: string }> {
+  /*
+   * VARIABLE DECLARATION
+   */
+
+  const tarFile =
+    installDir + '/' + versionInfo.download.split('/').slice(-1)[0]
+  const installSubDir = installDir + '/' + versionInfo.version
+  const sourceChecksum = versionInfo.checksum
+    ? (
+        await axios.default.get(versionInfo.checksum, {
+          responseType: 'text'
+        })
+      ).data
+    : undefined
+
+  const abortHandler = () => {
+    const error = new Error(
+      `Installation of ${versionInfo.version} was aborted!`
+    )
+    error.name = 'AbortError'
+    unlinkFile(tarFile)
+    if (existsSync(installSubDir)) {
+      rmSync(installSubDir, { recursive: true })
+    }
+
+    throw error
+  }
+
+  /*
+   * INSTALLATION PROCESS
+   */
+
   // Check if installDir exist
   if (!existsSync(installDir)) {
     throw new Error(`Installation directory ${installDir} does not exist!`)
@@ -157,16 +191,6 @@ async function installVersion({
     throw new Error(`No download link provided for ${versionInfo.version}!`)
   }
 
-  const installSubDir = installDir + '/' + versionInfo.version
-
-  const sourceChecksum = versionInfo.checksum
-    ? (
-        await axios.default.get(versionInfo.checksum, {
-          responseType: 'text'
-        })
-      ).data
-    : undefined
-
   // Check if it already exist
   if (existsSync(installSubDir) && !overwrite) {
     console.warn(`${versionInfo.version} is already installed. Skip installing! \n
@@ -177,23 +201,21 @@ async function installVersion({
     return { versionInfo: versionInfo, installDir: installSubDir }
   }
 
-  // Prepare destination where to download tar file
-  const tarFile =
-    installDir + '/' + versionInfo.download.split('/').slice(-1)[0]
-
-  if (existsSync(tarFile)) {
-    if (!unlinkFile(tarFile)) {
-      throw new Error(`Couldn't unlink already existing archive ${tarFile}!`)
-    }
-  }
+  // remove tarFile if still exist
+  unlinkFile(tarFile)
 
   // Download
   await downloadFile({
     url: versionInfo.download,
     downloadDir: installDir,
     downsize: versionInfo.downsize,
-    onProgress: onProgress
+    onProgress: onProgress,
+    abortSignal: abortSignal
   }).catch((error: string) => {
+    if (error.includes('AbortError')) {
+      abortHandler()
+    }
+
     unlinkFile(tarFile)
     throw new Error(
       `Download of ${versionInfo.version} failed with:\n ${error}`
@@ -223,8 +245,13 @@ async function installVersion({
     filePath: tarFile,
     unzipDir: installSubDir,
     overwrite: overwrite,
-    onProgress: onProgress
+    onProgress: onProgress,
+    abortSignal: abortSignal
   }).catch((error: string) => {
+    if (error.includes('AbortError')) {
+      abortHandler()
+    }
+
     rmSync(installSubDir, { recursive: true })
     unlinkFile(tarFile)
     throw new Error(
