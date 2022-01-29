@@ -163,7 +163,9 @@ describe('Main - InstallVersion', () => {
     })
 
     expect(progress).toBeCalledWith('downloading', {
-      percentage: expect.any(Number)
+      percentage: expect.any(Number),
+      avgSpeed: expect.any(Number),
+      eta: expect.any(Number)
     })
     expect(progress).not.toBeCalledWith('unzipping')
     expect(progress).toBeCalledWith('idle')
@@ -265,7 +267,9 @@ describe('Main - InstallVersion', () => {
     })
 
     expect(progress).toBeCalledWith('downloading', {
-      percentage: expect.any(Number)
+      percentage: expect.any(Number),
+      avgSpeed: expect.any(Number),
+      eta: expect.any(Number)
     })
     expect(progress).toBeCalledWith('unzipping')
     expect(progress).toBeCalledWith('idle')
@@ -327,7 +331,9 @@ describe('Main - InstallVersion', () => {
     })
 
     expect(progress).toBeCalledWith('downloading', {
-      percentage: expect.any(Number)
+      percentage: expect.any(Number),
+      avgSpeed: expect.any(Number),
+      eta: expect.any(Number)
     })
     expect(progress).toBeCalledWith('unzipping')
     expect(progress).toBeCalledWith('idle')

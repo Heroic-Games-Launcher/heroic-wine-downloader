@@ -197,6 +197,7 @@ async function installVersion({
   await downloadFile({
     url: versionInfo.download,
     downloadDir: installDir,
+    downsize: versionInfo.downsize,
     onProgress: onProgress
   }).catch((error: string) => {
     unlinkFile(tarFile)

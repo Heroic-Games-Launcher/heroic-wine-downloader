@@ -90,6 +90,7 @@ function getFolderSize(folder: string): number {
 interface downloadProps {
   url: string
   downloadDir: string
+  downsize: number
   onProgress: (state: State, progress?: ProgressInfo) => void
 }
 
@@ -98,12 +99,14 @@ interface downloadProps {
  *
  * @param url url of the file
  * @param downloadDir absolute path to the download directory
+ * @param downsize needed to calculate download speed
  * @param onProgress callback to get download progress
  * @returns resolves or rejects with a message
  */
 async function downloadFile({
   url,
   downloadDir,
+  downsize,
   onProgress
 }: downloadProps): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -123,19 +126,37 @@ async function downloadFile({
     const filePath = downloadDir + '/' + url.split('/').slice(-1)[0]
     const download = spawn('curl', ['-L', url, '-o', filePath, '-#'])
 
+    const startTime = process.hrtime.bigint()
+
     // curl does somehow print on stderr
     // progress calculation is done on stderr
     download.stderr.on('data', function (stderr) {
+      // get time
+      const time = process.hrtime.bigint()
+
       // get info from curl output
       const newPercentage = parseInt(stderr.toString())
 
       // check if percentage is valid
-      percentage = !isNaN(newPercentage) ? newPercentage : percentage
+      percentage =
+        !isNaN(newPercentage) && newPercentage > percentage
+          ? newPercentage
+          : percentage
 
-      // check if speed is valid and convert to Bytes per second
+      // calculate download speed
+      const alreadyDonwloaded = (downsize * percentage) / 100
+      const seconds = Number(time - startTime) / Math.pow(10, 9)
+      const avgSpeed = alreadyDonwloaded / seconds
 
+      // calculate eta
+      const eta =
+        percentage > 0 ? (100 * seconds) / percentage - seconds : seconds
+
+      // Calculate avgSpeed
       onProgress('downloading', {
-        percentage: percentage
+        percentage: percentage,
+        avgSpeed: avgSpeed,
+        eta: Math.ceil(eta)
       })
     })
 
