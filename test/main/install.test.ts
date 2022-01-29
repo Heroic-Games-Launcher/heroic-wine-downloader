@@ -178,11 +178,11 @@ describe('Main - InstallVersion', () => {
     const progress = jest.fn()
 
     if (!existsSync(installDir)) {
-      mkdirSync(`${installDir}/test`, { recursive: true })
+      mkdirSync(`${installDir}/Wine-1.2.3`, { recursive: true })
     }
 
     const releaseVersion: VersionInfo = {
-      version: '1.2.3',
+      version: 'Wine-1.2.3',
       type: 'wine-ge',
       date: '12/24/2021',
       download: `file:///${__dirname}/../test_data/test.tar.xz`,
@@ -197,7 +197,7 @@ describe('Main - InstallVersion', () => {
     })
       .then((response) => {
         expect(response.versionInfo).toBe(releaseVersion)
-        expect(response.installDir).toBe(`${installDir}/test`)
+        expect(response.installDir).toBe(`${installDir}/Wine-1.2.3`)
       })
       .catch(() => {
         failed = true
@@ -233,7 +233,7 @@ describe('Main - InstallVersion', () => {
     }
 
     const releaseVersion: VersionInfo = {
-      version: '1.2.3',
+      version: 'Wine-1.2.3',
       type: 'wine-ge',
       date: '12/24/2021',
       download: `file:///${fileLink}`,
@@ -248,7 +248,7 @@ describe('Main - InstallVersion', () => {
     })
       .then((response) => {
         expect(response.versionInfo).toBe(releaseVersion)
-        expect(response.installDir).toBe(`${installDir}/test`)
+        expect(response.installDir).toBe(`${installDir}/Wine-1.2.3`)
       })
       .catch(() => {
         failed = true
@@ -297,7 +297,7 @@ describe('Main - InstallVersion', () => {
     }
 
     const releaseVersion: VersionInfo = {
-      version: '1.2.3',
+      version: 'Wine-1.2.3',
       type: 'wine-ge',
       date: '12/24/2021',
       download: `file:///${fileLink}`,
@@ -312,7 +312,7 @@ describe('Main - InstallVersion', () => {
     })
       .then((response) => {
         expect(response.versionInfo).toBe(releaseVersion)
-        expect(response.installDir).toBe(`${installDir}/test`)
+        expect(response.installDir).toBe(`${installDir}/Wine-1.2.3`)
       })
       .catch(() => {
         failed = true
@@ -336,6 +336,66 @@ describe('Main - InstallVersion', () => {
       eta: expect.any(Number)
     })
     expect(progress).toBeCalledWith('unzipping')
+    expect(progress).toBeCalledWith('idle')
+  })
+
+  test('install fails if subfolder can not be created', async () => {
+    const fileLink = `${__dirname}/../test_data/test.tar.xz`
+    const fileBuffer = readFileSync(fileLink)
+    const hashSum = crypto.createHash('sha512')
+    hashSum.update(fileBuffer)
+    const checksum = hashSum.digest('hex')
+
+    const installDir = __dirname + '/test_install'
+    let failed = false
+    axios.default.get = jest.fn().mockReturnValue({ data: checksum })
+    const progress = jest.fn()
+
+    if (!existsSync(installDir)) {
+      mkdirSync(installDir)
+    }
+
+    const releaseVersion: VersionInfo = {
+      version: 'Wine-1.2.3/invalid',
+      type: 'wine-ge',
+      date: '12/24/2021',
+      download: `file:///${fileLink}`,
+      downsize: 100,
+      disksize: 0,
+      checksum: '<to-checksum-file>'
+    }
+    await installVersion({
+      versionInfo: releaseVersion,
+      installDir: installDir,
+      onProgress: progress
+    })
+      .then(() => {
+        failed = true
+      })
+      .catch((error: Error) => {
+        expect(error.message).toContain(
+          'Failed to make folder /home/niklas/Repository/wine-proton-downloader/test/main/test_install/Wine-1.2.3/invalid with:'
+        )
+      })
+
+    if (existsSync(installDir)) {
+      rmSync(installDir, { recursive: true })
+    }
+
+    if (failed) {
+      throw Error('No error should be thrown!')
+    }
+
+    expect(axios.default.get).toBeCalledWith('<to-checksum-file>', {
+      responseType: 'text'
+    })
+
+    expect(progress).toBeCalledWith('downloading', {
+      percentage: expect.any(Number),
+      avgSpeed: expect.any(Number),
+      eta: expect.any(Number)
+    })
+    expect(progress).not.toBeCalledWith('unzipping')
     expect(progress).toBeCalledWith('idle')
   })
 })
