@@ -19,7 +19,7 @@ describe('Main - InstallVersion', () => {
 
     const releaseVersion: VersionInfo = {
       version: '1.2.3',
-      type: 'wine-ge',
+      type: 'Wine-GE',
       date: '12/24/2021',
       download: '',
       downsize: 100,
@@ -46,7 +46,7 @@ describe('Main - InstallVersion', () => {
 
     const releaseVersion: VersionInfo = {
       version: '1.2.3',
-      type: 'wine-ge',
+      type: 'Wine-GE',
       date: '12/24/2021',
       download: '',
       downsize: 100,
@@ -73,7 +73,7 @@ describe('Main - InstallVersion', () => {
 
     const releaseVersion: VersionInfo = {
       version: '1.2.3',
-      type: 'wine-ge',
+      type: 'Wine-GE',
       date: '12/24/2021',
       download: '',
       downsize: 100,
@@ -98,7 +98,7 @@ describe('Main - InstallVersion', () => {
 
     const releaseVersion: VersionInfo = {
       version: '1.2.3',
-      type: 'wine-ge',
+      type: 'Wine-GE',
       date: '12/24/2021',
       download: '',
       downsize: 100,
@@ -132,7 +132,7 @@ describe('Main - InstallVersion', () => {
 
     const releaseVersion: VersionInfo = {
       version: '1.2.3',
-      type: 'wine-ge',
+      type: 'Wine-GE',
       date: '12/24/2021',
       download: `file:///${__dirname}/../test_data/test.tar.gz`,
       downsize: 100,
@@ -172,6 +172,60 @@ describe('Main - InstallVersion', () => {
     expect(progress).toBeCalledWith('idle')
   })
 
+  test('install warns because no checksum provided', async () => {
+    const installDir = __dirname + '/test_install'
+    let failed = false
+    axios.default.get = jest.fn()
+    const progress = jest.fn()
+    console.warn = jest.fn()
+
+    if (!existsSync(installDir)) {
+      mkdirSync(installDir)
+    }
+
+    const releaseVersion: VersionInfo = {
+      version: '1.2.3',
+      type: 'Wine-GE',
+      date: '12/24/2021',
+      download: `file:///${__dirname}/../test_data/test.tar.gz`,
+      downsize: 100,
+      disksize: 0,
+      checksum: ''
+    }
+    await installVersion({
+      versionInfo: releaseVersion,
+      installDir: installDir,
+      onProgress: progress
+    })
+      .then((response) => {
+        expect(console.warn).toBeCalledWith(
+          'No checksum provided. Download of 1.2.3 could be invalid!'
+        )
+        expect(response.versionInfo.version).toBe(releaseVersion.version)
+      })
+      .catch(() => {
+        failed = true
+      })
+
+    if (existsSync(installDir)) {
+      rmSync(installDir, { recursive: true })
+    }
+
+    if (failed) {
+      throw Error('No error should be thrown!')
+    }
+
+    expect(axios.default.get).not.toBeCalledWith()
+
+    expect(progress).toBeCalledWith('downloading', {
+      percentage: expect.any(Number),
+      avgSpeed: expect.any(Number),
+      eta: expect.any(Number)
+    })
+    expect(progress).toBeCalledWith('unzipping')
+    expect(progress).toBeCalledWith('idle')
+  })
+
   test('install succeed because already exist', async () => {
     const installDir = __dirname + '/test_install'
     let failed = false
@@ -184,7 +238,7 @@ describe('Main - InstallVersion', () => {
 
     const releaseVersion: VersionInfo = {
       version: 'Wine-1.2.3',
-      type: 'wine-ge',
+      type: 'Wine-GE',
       date: '12/24/2021',
       download: `file:///${__dirname}/../test_data/test.tar.gz`,
       downsize: 100,
@@ -235,7 +289,7 @@ describe('Main - InstallVersion', () => {
 
     const releaseVersion: VersionInfo = {
       version: 'Wine-1.2.3',
-      type: 'wine-ge',
+      type: 'Wine-GE',
       date: '12/24/2021',
       download: `file:///${fileLink}`,
       downsize: 100,
@@ -302,7 +356,7 @@ describe('Main - InstallVersion', () => {
 
     const releaseVersion: VersionInfo = {
       version: 'Wine-1.2.3',
-      type: 'wine-ge',
+      type: 'Wine-GE',
       date: '12/24/2021',
       download: `file:///${fileLink}`,
       downsize: 100,
@@ -369,7 +423,7 @@ describe('Main - InstallVersion', () => {
 
     const releaseVersion: VersionInfo = {
       version: 'Wine-1.2.3',
-      type: 'wine-ge',
+      type: 'Wine-GE',
       date: '12/24/2021',
       download: `file:///${fileLink}`,
       downsize: 100,
@@ -433,7 +487,7 @@ describe('Main - InstallVersion', () => {
 
     const releaseVersion: VersionInfo = {
       version: 'Wine-1.2.3',
-      type: 'wine-ge',
+      type: 'Wine-GE',
       date: '12/24/2021',
       download: `file:///${fileLink}`,
       downsize: 100,
@@ -492,7 +546,7 @@ describe('Main - InstallVersion', () => {
 
     const releaseVersion: VersionInfo = {
       version: 'Wine-1.2.3/invalid',
-      type: 'wine-ge',
+      type: 'Wine-GE',
       date: '12/24/2021',
       download: `file:///${fileLink}`,
       downsize: 100,
