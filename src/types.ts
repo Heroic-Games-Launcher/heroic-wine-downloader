@@ -1,4 +1,14 @@
 /**
+ * Defines from where the version comes
+ */
+export type Type =
+  | 'Wine-GE'
+  | 'Proton-GE'
+  | 'Proton'
+  | 'Wine-Lutris'
+  | 'Wine-Kron4ek'
+
+/**
  * Interface contains information about a version
  * - version
  * - type (wine, proton, lutris, ge ...)
@@ -9,7 +19,7 @@
  */
 export interface VersionInfo {
   version: string
-  type: 'wine-ge' | 'proton-ge' | 'proton' | 'wine-lutris'
+  type: Type
   date: string
   download: string
   downsize: number
