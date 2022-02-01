@@ -129,6 +129,7 @@ async function downloadFile({
     }
 
     let percentage = 0
+    let firsts = 0
     const filePath = downloadDir + '/' + url.split('/').slice(-1)[0]
     const download = spawn('curl', ['-L', url, '-o', filePath, '-#'], {
       signal: abortSignal
@@ -145,9 +146,16 @@ async function downloadFile({
       // get info from curl output
       const newPercentage = parseInt(stderr.toString())
 
+      if (firsts <= 10) {
+        firsts++
+        console.log('percentage = ', newPercentage)
+      }
+
       // check if percentage is valid
       percentage =
-        !isNaN(newPercentage) && newPercentage > percentage
+        !isNaN(newPercentage) &&
+        100 > newPercentage &&
+        newPercentage > percentage
           ? newPercentage
           : percentage
 
