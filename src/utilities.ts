@@ -147,7 +147,9 @@ async function downloadFile({
 
       // check if percentage is valid
       percentage =
-        !isNaN(newPercentage) && newPercentage > percentage
+        !isNaN(newPercentage) &&
+        100 > newPercentage &&
+        newPercentage > percentage
           ? newPercentage
           : percentage
 
