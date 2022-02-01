@@ -1,11 +1,11 @@
 import * as axios from 'axios'
 import { existsSync, statSync, unlinkSync } from 'graceful-fs'
 import { spawnSync, spawn } from 'child_process'
-import { ProgressInfo, State, VersionInfo } from './types'
+import { ProgressInfo, State, VersionInfo, Type } from './types'
 
 interface fetchProps {
   url: string
-  type: 'wine-ge' | 'proton-ge' | 'proton' | 'wine-lutris'
+  type: Type
   count: number
 }
 
@@ -30,7 +30,7 @@ function fetchReleases({
       .then((data) => {
         for (const release of data.data) {
           const release_data = {} as VersionInfo
-          release_data.version = type.includes('wine')
+          release_data.version = type.includes('Wine')
             ? `Wine-${release.tag_name}`
             : `Proton-${release.tag_name}`
           release_data.type = type

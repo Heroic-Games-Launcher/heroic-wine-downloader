@@ -53,7 +53,7 @@ async function getAvailableVersions({
       case Repositorys.WINEGE: {
         await fetchReleases({
           url: WINEGE_URL,
-          type: 'wine-ge',
+          type: 'Wine-GE',
           count: count
         })
           .then((fetchedReleases: VersionInfo[]) => {
@@ -67,7 +67,7 @@ async function getAvailableVersions({
       case Repositorys.PROTONGE: {
         await fetchReleases({
           url: PROTONGE_URL,
-          type: 'proton-ge',
+          type: 'Proton-GE',
           count: count
         })
           .then((fetchedReleases: VersionInfo[]) => {
@@ -81,7 +81,7 @@ async function getAvailableVersions({
       case Repositorys.PROTON: {
         await fetchReleases({
           url: PROTON_URL,
-          type: 'proton',
+          type: 'Proton',
           count: count
         })
           .then((fetchedReleases: VersionInfo[]) => {
@@ -95,7 +95,7 @@ async function getAvailableVersions({
       case Repositorys.WINELUTRIS: {
         await fetchReleases({
           url: WINELUTRIS_URL,
-          type: 'wine-lutris',
+          type: 'Wine-Lutris',
           count: count
         })
           .then((fetchedReleases: VersionInfo[]) => {
@@ -228,9 +228,15 @@ async function installVersion({
   hashSum.update(fileBuffer)
 
   const downloadChecksum = hashSum.digest('hex')
-  if (!sourceChecksum.includes(downloadChecksum)) {
-    unlinkFile(tarFile)
-    throw new Error('Checksum verification failed')
+  if (sourceChecksum) {
+    if (!sourceChecksum.includes(downloadChecksum)) {
+      unlinkFile(tarFile)
+      throw new Error('Checksum verification failed')
+    }
+  } else {
+    console.warn(
+      `No checksum provided. Download of ${versionInfo.version} could be invalid!`
+    )
   }
 
   // Unzip
