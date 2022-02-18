@@ -8,12 +8,7 @@ import {
   statSync
 } from 'graceful-fs'
 
-import {
-  WINEGE_URL,
-  PROTONGE_URL,
-  PROTON_URL,
-  WINELUTRIS_URL
-} from './constants'
+import { WINEGE_URL, PROTONGE_URL, WINELUTRIS_URL } from './constants'
 import { VersionInfo, Repositorys, State, ProgressInfo } from './types'
 import {
   downloadFile,
@@ -42,7 +37,6 @@ async function getAvailableVersions({
   repositorys = [
     Repositorys.WINEGE,
     Repositorys.PROTONGE,
-    Repositorys.PROTON,
     Repositorys.WINELUTRIS
   ],
   count = 100
@@ -68,20 +62,6 @@ async function getAvailableVersions({
         await fetchReleases({
           url: PROTONGE_URL,
           type: 'Proton-GE',
-          count: count
-        })
-          .then((fetchedReleases: VersionInfo[]) => {
-            releases.push(...fetchedReleases)
-          })
-          .catch((error: Error) => {
-            throw error
-          })
-        break
-      }
-      case Repositorys.PROTON: {
-        await fetchReleases({
-          url: PROTON_URL,
-          type: 'Proton',
           count: count
         })
           .then((fetchedReleases: VersionInfo[]) => {
