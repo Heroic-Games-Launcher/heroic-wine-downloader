@@ -1,12 +1,7 @@
 /**
  * Defines from where the version comes
  */
-export type Type =
-  | 'Wine-GE'
-  | 'Proton-GE'
-  | 'Proton'
-  | 'Wine-Lutris'
-  | 'Wine-Kron4ek'
+export type Type = 'Wine-GE' | 'Proton-GE' | 'Wine-Lutris' | 'Wine-Kron4ek'
 
 /**
  * Interface contains information about a version
@@ -33,7 +28,6 @@ export interface VersionInfo {
 export enum Repositorys {
   WINEGE,
   PROTONGE,
-  PROTON,
   WINELUTRIS
 }
 
