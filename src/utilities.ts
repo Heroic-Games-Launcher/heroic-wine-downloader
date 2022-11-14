@@ -30,9 +30,31 @@ function fetchReleases({
       .then((data) => {
         for (const release of data.data) {
           const release_data = {} as VersionInfo
-          release_data.version = type.includes('Wine')
-            ? `Wine-${release.tag_name}`
-            : `Proton-${release.tag_name}`
+
+          switch (type) {
+            case 'Soda-Bottles':
+            case 'Wine-GE':
+              release_data.version = `Wine-${release.tag_name}`
+              break
+            case 'DXVK':
+              release_data.version = `DXVK-${release.tag_name}`
+              break
+            case 'DXVK-Async':
+              release_data.version = `DXVK-Async-${release.tag_name}`
+              break
+            case 'DXVK-NVAPI':
+              release_data.version = `DXVK-NVAPI-${release.tag_name}`
+              break
+            case 'VKD3D':
+              release_data.version = `VKD3D-${release.tag_name.replace(
+                'vkd3d-',
+                ''
+              )}`
+              break
+            default:
+              release_data.version = release.tag_name
+              break
+          }
           release_data.type = type
           release_data.date = release.published_at.split('T')[0]
           release_data.disksize = 0

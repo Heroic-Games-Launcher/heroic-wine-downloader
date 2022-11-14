@@ -3,10 +3,11 @@
  */
 export type Type =
   | 'Wine-GE'
-  | 'Proton-GE'
-  | 'Proton'
-  | 'Wine-Lutris'
-  | 'Wine-Kron4ek'
+  | 'Soda-Bottles'
+  | 'DXVK'
+  | 'DXVK-Async'
+  | 'DXVK-NVAPI'
+  | 'VKD3D'
 
 /**
  * Interface contains information about a version
@@ -32,9 +33,11 @@ export interface VersionInfo {
  */
 export enum Repositorys {
   WINEGE,
-  PROTONGE,
-  PROTON,
-  WINELUTRIS
+  SODA_BOTTLES,
+  DXVK,
+  DXVK_ASYNC,
+  DXVK_NVAPI,
+  VKD3D
 }
 
 /**

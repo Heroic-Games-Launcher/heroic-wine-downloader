@@ -10,9 +10,11 @@ import {
 
 import {
   WINEGE_URL,
-  PROTONGE_URL,
-  PROTON_URL,
-  WINELUTRIS_URL
+  SODA_BOTTLES_URL,
+  DXVK_URL,
+  DXVK_ASYNC_URL,
+  VKD3D_URL,
+  DXVK_NVAPI_URL
 } from './constants'
 import { VersionInfo, Repositorys, State, ProgressInfo } from './types'
 import {
@@ -41,9 +43,11 @@ interface getVersionsProps {
 async function getAvailableVersions({
   repositorys = [
     Repositorys.WINEGE,
-    Repositorys.PROTONGE,
-    Repositorys.PROTON,
-    Repositorys.WINELUTRIS
+    Repositorys.SODA_BOTTLES,
+    Repositorys.DXVK,
+    Repositorys.DXVK_ASYNC,
+    Repositorys.DXVK_NVAPI,
+    Repositorys.VKD3D
   ],
   count = 100
 }: getVersionsProps): Promise<VersionInfo[]> {
@@ -64,10 +68,28 @@ async function getAvailableVersions({
           })
         break
       }
-      case Repositorys.PROTONGE: {
+      case Repositorys.SODA_BOTTLES: {
         await fetchReleases({
-          url: PROTONGE_URL,
-          type: 'Proton-GE',
+          url: SODA_BOTTLES_URL,
+          type: 'Soda-Bottles',
+          count: count
+        })
+          .then((fetchedReleases: VersionInfo[]) => {
+            releases.push(
+              ...fetchedReleases.filter((release: VersionInfo) =>
+                release.version.includes('soda')
+              )
+            )
+          })
+          .catch((error: Error) => {
+            throw error
+          })
+        break
+      }
+      case Repositorys.DXVK: {
+        await fetchReleases({
+          url: DXVK_URL,
+          type: 'DXVK',
           count: count
         })
           .then((fetchedReleases: VersionInfo[]) => {
@@ -78,10 +100,10 @@ async function getAvailableVersions({
           })
         break
       }
-      case Repositorys.PROTON: {
+      case Repositorys.DXVK_ASYNC: {
         await fetchReleases({
-          url: PROTON_URL,
-          type: 'Proton',
+          url: DXVK_ASYNC_URL,
+          type: 'DXVK-Async',
           count: count
         })
           .then((fetchedReleases: VersionInfo[]) => {
@@ -92,10 +114,24 @@ async function getAvailableVersions({
           })
         break
       }
-      case Repositorys.WINELUTRIS: {
+      case Repositorys.DXVK_NVAPI: {
         await fetchReleases({
-          url: WINELUTRIS_URL,
-          type: 'Wine-Lutris',
+          url: DXVK_NVAPI_URL,
+          type: 'DXVK-NVAPI',
+          count: count
+        })
+          .then((fetchedReleases: VersionInfo[]) => {
+            releases.push(...fetchedReleases)
+          })
+          .catch((error: Error) => {
+            throw error
+          })
+        break
+      }
+      case Repositorys.VKD3D: {
+        await fetchReleases({
+          url: VKD3D_URL,
+          type: 'VKD3D',
           count: count
         })
           .then((fetchedReleases: VersionInfo[]) => {
